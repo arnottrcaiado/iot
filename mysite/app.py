@@ -26,7 +26,7 @@ def getTest():
 @app.route('/post', methods=['POST'])
 def putTest():
     cab = request.headers.get('Authorization-Token')    # token que pode ser utilizado para validacao
-    dados = request.get_json
+    dados = request.get_json()
     sensor  = dados["sensor"]
     valor = dados["valor"]
     return {"sensor": str(sensor) , "valor": str(valor)}
