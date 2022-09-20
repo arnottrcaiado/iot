@@ -1,7 +1,7 @@
 /**
     Internet das Coisas
     Baseado em exemplo da IDE Arduino
-    
+
     BasicHTTPClient.ino
     Created on: 24.05.2015
 
@@ -33,7 +33,7 @@ int val_sens=0;
 void setup() {
 
   Serial.begin(115200);
- 
+
   Serial.println();
   Serial.println();
   Serial.println();
@@ -51,12 +51,12 @@ void setup() {
 void loop() {
   char dados[255];
   char sensor [10], valor[10];
-  
+
   // wait for WiFi connection
   if ((WiFiMulti.run() == WL_CONNECTED)) {
 
     Serial.print("[HTTP] begin...\n");
-    if (http.begin(client, "http://apiot.pythonanywhere.com/post")){
+    if (http.begin(client, "http://apiot.pythonanywhere.com/postJson")){
 
 
       Serial.print("[HTTP] POST...\n");
@@ -69,10 +69,10 @@ void loop() {
 
       doc["sensor"] = sensor;
       doc["valor"] = valor;
-  
+
       serializeJson(doc, dados);
       Serial.println( dados );
-      
+
       int httpCode = http.POST( dados );
 
       // httpCode will be negative on error
