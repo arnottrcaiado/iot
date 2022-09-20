@@ -1,10 +1,6 @@
 /**
     Internet das Coisas
-    Baseado em exemplo da IDE Arduino
-
-    BasicHTTPClient.ino
-    Created on: 24.05.2015
-
+    Baseado em exemplo da IDE Arduino (BasicHTTPClient.ino)
 
     Setembro de 2022
 */
@@ -19,8 +15,7 @@
 
 #include <WiFiClient.h>
 
-/* Variaveis Globais */
-
+/* Variaveis Globais , objetos e classes */
 
 ESP8266WiFiMulti WiFiMulti;
 WiFiClient client;
@@ -39,7 +34,7 @@ void setup() {
   Serial.println();
 
   for (uint8_t t = 4; t > 0; t--) {
-    Serial.printf("[SETUP] WAIT %d...\n", t);
+    Serial.printf("[SETUP] aguarde %d...\n", t);
     Serial.flush();
     delay(1000);
   }
@@ -52,15 +47,12 @@ void loop() {
   char dados[255];
   char sensor [10], valor[10];
 
-  // wait for WiFi connection
+  // aguarde pela conexao wifi
   if ((WiFiMulti.run() == WL_CONNECTED)) {
-
-    Serial.print("[HTTP] begin...\n");
+    Serial.print("[HTTP] iniciando ...\n");
     if (http.begin(client, "http://apiot.pythonanywhere.com/postJson")){
-
-
       Serial.print("[HTTP] POST...\n");
-      // start connection and send HTTP header
+      // inicia conexao e envia HTTP header
       http.addHeader("Content-Type","application/json");
       http.addHeader("Authorization-Token", "chave de header" );
 
@@ -75,23 +67,23 @@ void loop() {
 
       int httpCode = http.POST( dados );
 
-      // httpCode will be negative on error
+      // httpCode retorna numero negativo em caso de erro
       if (httpCode > 0) {
-        // HTTP header has been send and Server response header has been handled
-        Serial.printf("[HTTP] POST... code: %d\n", httpCode);
+        // HTTP enviou header e informaç~ões
+        Serial.printf("[HTTP] POST... codigo: %d\n", httpCode);
 
-        // file found at server
+        // requisiç~ão bem sucedida
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
           String payload = http.getString();
           Serial.println(payload);
         }
       } else {
-        Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
+        Serial.printf("[HTTP] POST... falhou, erro n.: %s\n", http.errorToString(httpCode).c_str());
       }
 
       http.end();
     } else {
-      Serial.printf("[HTTP} Unable to connect\n");
+      Serial.printf("[HTTP} Nao foi ppssivel conectar\n");
     }
   }
 
