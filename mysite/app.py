@@ -8,6 +8,18 @@
 
 # bibliotecas basicas
 from flask import Flask, request
+import json
+import os
+import pandas as pd
+import time
+from datetime import datetime, date
+
+
+######################################################################################## ic - diversas APIs
+os.environ["TZ"] = "America/Recife"
+time.tzset()
+
+PATH_FILES = '/home/apiot/mysite/dados'
 
 app = Flask(__name__)
 
@@ -21,20 +33,23 @@ def hello_world():
 def getJson():
     cab = request.headers.get('Authorization-Token')
     return {"msg get": str(cab) }
+# ------------------------------------------------------------
+# exemplo de um endpoit para consultar todo o volume de dados
+@app.route('/getJsonAll', methods=['GET'])
+def getJsonAll():
+    df = pd.read_csv( PATH_FILES+'/log_dados.csv')
+    result = df.to_json(orient="records")
+    dados = json.loads(result)
+    return json.dumps( dados)
 
 # exemplo de um endpoit para requisicoes basicas POST. formato JSON
 @app.route('/postJson', methods=['POST'])
 def postJson():
     cab = request.headers.get('Authorization-Token')    # token que pode ser utilizado para validacao
-
     dados = request.get_json()                          # recebe os dados em formato json
-
     sensor  = dados["sensor"]                           # identifica cada elemento do json de origem
     valor = dados["valor"]
-
-    # criar funcao para gravar dados
     gravaDados ( sensor, valor )
-
     return {"sensor": str(sensor) , "valor": str(valor)}
 
 
@@ -56,16 +71,17 @@ def postForm():
 # funcao para concatenar linha para arquivo csv
 def montaStr( *args ) :
   st = ''
-  t = len( args )
-  for elemento in args :
-    st = st + elemento
-    t = t-1
-    if t != 0 :
-      st = st + ','
-  st = st + "\n"
-  return st
-
+  for x in args :
+    st += str(x)+','
+  return st[0:-1]+'\n'
 
 # grava dados
 def gravaDados( sensor, valor ):
+    data_atual = str(date.today())
+    hora_atual = str(datetime.time(datetime.now()))
+    hora_atual = hora_atual[0:5]
+    linha = montaStr( sensor, data_atual, hora_atual, valor )
+    arquivo = open(PATH_FILES+'/log_dados.csv','a')
+    arquivo.write( linha )
+    arquivo.close()
     return
