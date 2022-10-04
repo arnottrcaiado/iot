@@ -42,6 +42,13 @@ def getJsonAll():
     dados = json.loads(result)
     return json.dumps( dados)
 
+# exemplo de um endpoit para consultar todo o volume de dados
+@app.route('/getCount', methods=['GET'])
+def getCount():
+    df = pd.read_csv( PATH_FILES+'/log_dados.csv')
+    linhas = len(df.index)
+    return {"Linhas": str(linhas)}
+
 # exemplo de um endpoit para requisicoes basicas POST. formato JSON
 @app.route('/postJson', methods=['POST'])
 def postJson():
