@@ -3,10 +3,9 @@
 # Material de Apoio para Internet das Coisas
 #
 # Prof. Arnott Ramos Caiado
-#
 # ago/set 2022
-
 # bibliotecas basicas
+#
 from flask import Flask, request
 import json
 import os
@@ -14,15 +13,15 @@ import pandas as pd
 import time
 from datetime import datetime, date
 
-
 ######################################################################################## ic - diversas APIs
 os.environ["TZ"] = "America/Recife"
 time.tzset()
 
 PATH_FILES = '/home/apiot/mysite/dados'
 
-app = Flask(__name__)
+header_key = 'eFgHjukoli12Reatyghmaly76'
 
+app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
@@ -32,7 +31,11 @@ def hello_world():
 @app.route('/getJson', methods=['GET'])
 def getJson():
     cab = request.headers.get('Authorization-Token')
-    return {"msg get": str(cab) }
+    if validaHeader( cab ):
+        return {"getJson header": "ok"}
+    else :
+        return {"getJson header": "erro"}
+
 # ------------------------------------------------------------
 # exemplo de um endpoit para consultar todo o volume de dados
 @app.route('/getJsonAll', methods=['GET'])
@@ -53,13 +56,14 @@ def getCount():
 @app.route('/postJson', methods=['POST'])
 def postJson():
     cab = request.headers.get('Authorization-Token')    # token que pode ser utilizado para validacao
-    dados = request.get_json()                          # recebe os dados em formato json
-    sensor  = dados["sensor"]                           # identifica cada elemento do json de origem
-    valor = dados["valor"]
-    gravaDados ( sensor, valor )
-    return {"sensor": str(sensor) , "valor": str(valor)}
-
-
+    if validaHeader(cab) :
+        dados = request.get_json()                          # recebe os dados em formato json
+        sensor  = dados["sensor"]                           # identifica cada elemento do json de origem
+        valor = dados["valor"]
+        gravaDados ( sensor, valor )
+        return {"status": str(sensor) , "valor": str(valor)}
+    else :
+        return {"status": "erro-header invalido"}
 # end point para mostrar o uso da linha de comando com argumento
 @app.route('/getLinha', methods=['GET'])
 def getLinha():
@@ -92,3 +96,10 @@ def gravaDados( sensor, valor ):
     arquivo.write( linha )
     arquivo.close()
     return
+
+# funcao para validar header
+def validaHeader( cabecalho ):
+    if cabecalho == header_key :
+        return True
+    else :
+        return False
