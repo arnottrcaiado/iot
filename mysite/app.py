@@ -19,13 +19,17 @@ time.tzset()
 
 PATH_FILES = '/home/apiot/mysite/dados'
 
-header_key = 'eFgHjukoli12Reatyghmaly76'
+header_key = 'codigoheader'
 
 app = Flask(__name__)
 
 @app.route('/')
-def hello_world():
-    return 'Exemplo de um endpoit gerado automaticamente'
+def principal():
+    cabecalho=request.headers.get('Authorization-Token')
+    if ( cabecalho == header_key ) :
+        return 'API TESTE IoT'
+    else :
+        return 'Erro. Token'
 
 # exemplo de um endpoit para requisicoes basicas de consulta
 @app.route('/getJson', methods=['GET'])
